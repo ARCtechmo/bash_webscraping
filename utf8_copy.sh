@@ -65,3 +65,22 @@ function split_tr()
   done
 }
 split_tr ${1}
+
+function split_awk()
+{
+  url="${1}"
+
+  # print the contents of the file
+  local content=$(file -i "${1}")
+  echo -e "${content}"
+  echo -e "\nsplit the third field"
+
+  # split the encoding type from the third field
+  echo -e "\ncapturing the encoding type from field 3..."
+  sleep 1
+  for item in "${content}"; do
+    field_three=$(echo "${item}" | awk '{print $3}' | awk -F "=" '{print $2}')
+    echo "${field_three}"
+  done
+}
+split_awk "${1}"
