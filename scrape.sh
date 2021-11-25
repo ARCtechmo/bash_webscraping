@@ -3,6 +3,14 @@
 ##### INCOMPLETE - WORK IN PROGRESS ######
 # this is a simple webscraping utility
 
+#### START HERE NEXT####
+# get user input to grab content with the url and direct the input to files
+
+echo "This is simple webscraping utility"
+read -p "Enter the url:" url
+read -p "Enter the name of the file to direct the scraped content: " filename
+# this is where you will insert the scrape_html_text() function
+
 # create a function to scrape a webpage
 function scrape_html_text()
 {
@@ -16,7 +24,7 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 # input the url and <filename> into the command line: "scrape.sh" [url] [filename]
-# scrape_html_text "${1}" "${2}"
+scrape_html_text "${1}" "${2}"
 
 # ensure the output is decoded from UTF8 / ASCII to Unicode string format
 function decode_UTF8()
@@ -29,32 +37,32 @@ function decode_UTF8()
   website_format=$(file -i "${1}") # file use  awk; file -i use awk and sed
   echo "${website_format}"
 
-  data_type=$(echo ${website_format} | awk '{print $3}' | awk -F "=" '{print $2}')
-  echo "encoding: ${data_type}"
+  from_encoding=$(echo ${website_format} | awk '{print $3}' | awk -F "=" '{print $2}')
+  echo "encoding: ${from_encoding}"
 
-  if [ "${data_type}" == "ASCII" -o "${data_type}" == "ascii" ]; then
-    echo "The scraped data type is "${data_type}". No further formatting is necessary"
-  elif [ "${data_type}" == "US-ASCII" -o ${data_type} == "us-ascii" ]; then
-    echo "The scraped data type is "${data_type}". No further formatting is necessary"
+  if [ "${from_encoding}" == "ASCII" -o "${from_encoding}" == "ascii" ]; then
+    echo "The scraped data type is "${from_encoding}". No further formatting is necessary"
+
+  elif [ "${from_encoding}" == "US-ASCII" -o ${from_encoding} == "us-ascii" ]; then
+    echo "The scraped data type is "${from_encoding}". No further formatting is necessary"
 
   else
-    echo -e "\n-------TEST PRINT OF FALSE CONDITION AND CHARSET: ${data_type}------"
     echo -e "Converting encoding into local charset format...\n"
     sleep 1
-    
+
     # convert the encoding (e.g. utf8) to the local encoding on your machine
-    # use an exit status to test the outtput of the 'convert' variable
-    convert=$(iconv -f ${data_type}//TRANSLIT -t us-ascii/TRANSLIT ${html_file})
+    convert=$(iconv -f ${from_encoding}//TRANSLIT -t US-ASCII//TRANSLIT ${html_file} -o ${html_text_file})
     exit_status=$(echo $?)
-  #   if [ ! ${exit_status} -eq 0 ]; then
-  #     echo -e "\nuse 'iconv -l' command to ensure the 'data_type' variable is correct\n"
-  #   fi
-  #
-  #   # pipe the final output into a file called html_text.txt.
-  #   ${convert} -o ${html_text_file}
-  #   echo "displaying file content..."
-  #   file ${html_text_file}
+    if [ ! ${exit_status} -eq 0 ]; then
+      echo -e "\nuse 'iconv -l' command to ensure the 'data_type' variable is correct\n"
+
+    # pipe the final output into a file called html_text.txt.
+    else
+      echo "displaying ${html_text_file} file encoding..."
+      sleep 1
+      file -i ${html_text_file}
+    fi
   fi
 }
-# decode_UTF8 "website.html" "test.txt"
-decode_UTF8 "webscraping.html" "test.txt"
+# input the url and <filename> into the command line: "scrape.sh" [url] [filename]
+decode_UTF8 "${1}" "${2}"
