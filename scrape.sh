@@ -3,13 +3,72 @@
 ##### INCOMPLETE - WORK IN PROGRESS ######
 # this is a simple webscraping utility
 
-#### START HERE NEXT####
-# get user input to grab content with the url and direct the input to files
+# get user input to name the url
+echo "This is simple webscraping utility."
+echo "The filepath for this script: $0"
+read -p "Enter the url: " url
 
-echo "This is simple webscraping utility"
-read -p "Enter the url:" url
-read -p "Enter the name of the file to direct the scraped content: " filename
-# this is where you will insert the scrape_html_text() function
+# options to direct the web content to an existing file or create the file
+### continue work on this section ####
+echo -e "\nNext, pass the web content to an existing file or create a new file."
+read -p "Type [1] for an existing file or type [2] to create a new file: " choice
+case ${choice} in
+  1)
+    echo -e "\n------test CASE condition 1--------\n"
+    echo -e "You chose to pass the web content to an existing file."
+    read -p "Enter the name of the file to direct the web content: " filename
+    if [ -f "${filename}" -o -f "${filename}.txt" -o -f "$filename.html" ]; then
+      echo "The file "${filename}" is in the directory."
+    else
+      echo "The file ${filename} is not in the directory."
+    fi
+    ;;
+
+  2)
+    echo -e "\n------test CASE condition 2--------\n"
+    echo -e "You chose to create a new file."
+    read -p "Give the file an extension (csv,html,json,txt,xml): " ext
+    if [ "${ext}" == ".csv" -o "${ext}" == "csv" ]; then
+      echo -e "\n------test .txt extention type--------\n"
+    elif [ "${ext}" == ".html" -o "${ext}" == "html" ]; then
+      echo -e "\n------test .html extention type--------\n"
+    elif [ "${ext}" == ".json" -o "${ext}" == "json" ]; then
+      echo -e "\n------test .json extention type--------\n"
+    elif [ "${ext}" == ".txt" -o "${ext}" == "txt" ]; then
+      echo -e "\n------test .txt extention type--------\n"
+    elif [ "${ext}" == ".xml" -o "${ext}" == "xml" ]; then
+      echo -e "\n------test .xml extention type--------\n"
+    else
+      echo "Invalid format. Use lowercase only."
+      exit
+    fi
+    #### START HERE NEXT####
+    # finish tetting the if statements and extenstions
+    # finish the "case" section
+    # format the file extension
+    if [ "${ext}" != ".csv" -o "${ext}" != ".html" -o "${ext}" != ".json" -o "${ext}" != ".txt" -o "${ext}" != ".xml" ]; then
+      echo "-------test to change the extention------------"
+      formatted_ext=".${ext}"
+      echo "The file extention is ${formatted_ext}."
+      read -p "Enter the name of the file to direct the web content: " filename
+      echo "The filename: ${filename}${formatted_ext}"
+
+    else
+      echo "The file extention is ${ext}."
+      read -p "Enter the name of the file to direct the web content: " filename
+      echo "The filename: ${filename}${ext}"
+
+    fi
+    echo -e "creating the file in the current working directory..."
+    sleep 1
+    # touch ./"${filename}${ext}"
+
+    ;;
+  *)
+    echo "You made no choice."
+    ;;
+
+  esac
 
 # create a function to scrape a webpage
 function scrape_html_text()
@@ -24,7 +83,7 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 # input the url and <filename> into the command line: "scrape.sh" [url] [filename]
-scrape_html_text "${1}" "${2}"
+# scrape_html_text "${1}" "${2}"
 
 # ensure the output is decoded from UTF8 / ASCII to Unicode string format
 function decode_UTF8()
@@ -65,4 +124,4 @@ function decode_UTF8()
   fi
 }
 # input the url and <filename> into the command line: "scrape.sh" [url] [filename]
-decode_UTF8 "${1}" "${2}"
+# decode_UTF8 "${1}" "${2}"
