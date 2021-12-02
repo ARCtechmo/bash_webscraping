@@ -9,7 +9,9 @@ echo "The filepath for this script: $0"
 read -p "Enter the url: " url
 
 # options to direct the web content to an existing file or create the file
-### continue work on this section ####
+### START HERE NEXT ####
+## add code to pipe countent if file alredy exists for conditoin #1
+## add code to touch a file if the file does not exist for condition #2
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or type [2] to create a new file: " choice
 case ${choice} in
@@ -28,35 +30,24 @@ case ${choice} in
     echo -e "\n------test CASE condition 2--------\n"
     echo -e "You chose to create a new file."
     read -p "Give the file an extension (csv,html,json,txt,xml): " ext
-    if [ "${ext}" == ".csv" -o "${ext}" == "csv" ]; then
-      echo -e "\n------test .txt extention type--------\n"
-    elif [ "${ext}" == ".html" -o "${ext}" == "html" ]; then
-      echo -e "\n------test .html extention type--------\n"
-    elif [ "${ext}" == ".json" -o "${ext}" == "json" ]; then
-      echo -e "\n------test .json extention type--------\n"
-    elif [ "${ext}" == ".txt" -o "${ext}" == "txt" ]; then
-      echo -e "\n------test .txt extention type--------\n"
-    elif [ "${ext}" == ".xml" -o "${ext}" == "xml" ]; then
-      echo -e "\n------test .xml extention type--------\n"
-    else
-      echo "Invalid format. Use lowercase only."
-      exit
-    fi
-    #### START HERE NEXT####
-    # finish tetting the if statements and extenstions
-    # finish the "case" section
-    # format the file extension
-    if [ "${ext}" != ".csv" -o "${ext}" != ".html" -o "${ext}" != ".json" -o "${ext}" != ".txt" -o "${ext}" != ".xml" ]; then
-      echo "-------test to change the extention------------"
+    if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
+         -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
+
       formatted_ext=".${ext}"
-      echo "The file extention is ${formatted_ext}."
+      echo "The file extention is ${formatted_ext}"
       read -p "Enter the name of the file to direct the web content: " filename
       echo "The filename: ${filename}${formatted_ext}"
 
-    else
-      echo "The file extention is ${ext}."
+    elif [ "${ext}" == ".csv" -o "${ext}" == ".html" -o "${ext}" == ".json"\
+         -o "${ext}" == ".txt" -o "${ext}" == ".xml" ]; then
+
+      echo "The file extention is ${ext}"
       read -p "Enter the name of the file to direct the web content: " filename
       echo "The filename: ${filename}${ext}"
+
+    else
+        echo "Invalid format. Use lowercase only."
+        exit
 
     fi
     echo -e "creating the file in the current working directory..."
@@ -66,6 +57,7 @@ case ${choice} in
     ;;
   *)
     echo "You made no choice."
+    exit
     ;;
 
   esac
