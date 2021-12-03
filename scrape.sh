@@ -8,64 +8,15 @@ echo "This is simple webscraping utility."
 echo "The filepath for this script: $0"
 read -p "Enter the url: " url
 
-# options to direct the web content to an existing file or create the file
-### START HERE NEXT ####
-## add code to pipe countent if file alredy exists for conditoin #1
-## add code to touch a file if the file does not exist for condition #2
-echo -e "\nNext, pass the web content to an existing file or create a new file."
-read -p "Type [1] for an existing file or type [2] to create a new file: " choice
-case ${choice} in
-  1)
-    echo -e "\n------test CASE condition 1--------\n"
-    echo -e "You chose to pass the web content to an existing file."
-    read -p "Enter the name of the file to direct the web content: " filename
-    if [ -f "${filename}" -o -f "${filename}.txt" -o -f "$filename.html" ]; then
-      echo "The file "${filename}" is in the directory."
-    else
-      echo "The file ${filename} is not in the directory."
-    fi
-    ;;
-
-  2)
-    echo -e "\n------test CASE condition 2--------\n"
-    echo -e "You chose to create a new file."
-    read -p "Give the file an extension (csv,html,json,txt,xml): " ext
-    if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
-         -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
-
-      formatted_ext=".${ext}"
-      echo "The file extention is ${formatted_ext}"
-      read -p "Enter the name of the file to direct the web content: " filename
-      echo "The filename: ${filename}${formatted_ext}"
-
-    elif [ "${ext}" == ".csv" -o "${ext}" == ".html" -o "${ext}" == ".json"\
-         -o "${ext}" == ".txt" -o "${ext}" == ".xml" ]; then
-
-      echo "The file extention is ${ext}"
-      read -p "Enter the name of the file to direct the web content: " filename
-      echo "The filename: ${filename}${ext}"
-
-    else
-        echo "Invalid format. Use lowercase only."
-        exit
-
-    fi
-    echo -e "creating the file in the current working directory..."
-    sleep 1
-    # touch ./"${filename}${ext}"
-
-    ;;
-  *)
-    echo "You made no choice."
-    exit
-    ;;
-
-  esac
-
 # create a function to scrape a webpage
+### START HERE NEXT ###
+# functions  and user inpput all working
+# it is creating two files becasue of the html2txt command and the if statements
+# may need to modify the if statements to not create a file at all...
+
 function scrape_html_text()
 {
-  echo "scraping website url: $1" && sleep 2
+  echo "scraping url content: $1" && sleep 2
   local url="$1" # parameter 1 passed to the function is the url
   local html_file="$2" # parameter 2 is the .html file from the scraped website
 
@@ -74,8 +25,74 @@ function scrape_html_text()
   curl ${url} | html2text -ascii > ${html_file} # output in ASCII
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
-# input the url and <filename> into the command line: "scrape.sh" [url] [filename]
-# scrape_html_text "${1}" "${2}"
+
+# options to direct the web content to an existing file or create the file
+echo -e "\nNext, pass the web content to an existing file or create a new file."
+read -p "Type [1] for an existing file or type [2] to create a new file: " choice
+case ${choice} in
+  1)
+    echo -e "You chose to pass the web content to an existing file."
+    read -p "Enter the filename and extension to direct the web content: " filename
+    if [ -f "${filename}" -o -f "${filename}.csv" -o -f "${filename}.html" \
+        -o -f "${filename}.json" -o -f "${filename}.txt" -o -f "${filename}.xml" \
+       ]; then
+      echo "The file "${filename}" is in the directory."
+      echo "Downlading and redirecting content to "${filename}"..."
+      sleep 1
+
+      # pass the url and filename to the function
+      scrape_html_text "${url}" "${filename}"
+    else
+      echo "The file ${filename} is not in the directory."
+    fi
+    exit
+    ;;
+
+  2)
+    echo -e "You chose to create a new file."
+    read -p "Give the file an extension (csv,html,json,txt,xml): " ext
+    if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
+         -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
+### bug fix - text for double extensions in the output .ext.ext ###
+      formatted_ext=".${ext}"
+      echo "The file extension is ${formatted_ext}"
+      read -p "Enter the name of the file to direct the web content: " filename
+      echo "The filename: ${filename}${formatted_ext}"
+      echo -e "creating the file in the current working directory..."
+      sleep 1 && touch "${filename}${formatted_ext}"
+      echo -e "\nDownlading and redirecting content to "${filename}"..."
+      sleep 1
+
+      # pass the url and filename to the function
+      scrape_html_text "${url}" "${filename}"
+
+### bug fix - text for double extensions in the output .ext.ext ###
+
+    elif [ "${ext}" == ".csv" -o "${ext}" == ".html" -o "${ext}" == ".json"\
+         -o "${ext}" == ".txt" -o "${ext}" == ".xml" ]; then
+
+      echo "The file extension is ${ext}"
+      read -p "Enter the name of the file to direct the web content: " filename
+      echo "The filename: ${filename}${ext}"
+      echo -e "creating the file in the current working directory..."
+      sleep 1 && touch ./"${filename}${ext}"
+      echo -e "\nDownloading and redirecting content to "${filename}
+      # pass the url and filename to the function
+      scrape_html_text "${url}" "${filename}"
+
+    else
+        echo "Invalid format. Use lowercase only."
+        exit
+
+    fi
+    ;;
+
+  *)
+    echo "You made no choice."
+    exit
+    ;;
+
+  esac
 
 # ensure the output is decoded from UTF8 / ASCII to Unicode string format
 function decode_UTF8()
