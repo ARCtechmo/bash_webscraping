@@ -9,11 +9,6 @@ echo "The filepath for this script: $0"
 read -p "Enter the url: " url
 
 # create a function to scrape a webpage
-### START HERE NEXT ###
-# functions  and user inpput all working
-# it is creating two files becasue of the html2txt command and the if statements
-# may need to modify the if statements to not create a file at all...
-
 function scrape_html_text()
 {
   echo "scraping url content: $1" && sleep 2
@@ -26,31 +21,74 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
+### START HERE NEXT ###
+### continue testing all of the if statementens; first section working ###
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or type [2] to create a new file: " choice
 case ${choice} in
   1)
-    echo -e "You chose to pass the web content to an existing file."
-    read -p "Enter the filename and extension to direct the web content: " filename
-    if [ -f "${filename}" -o -f "${filename}.csv" -o -f "${filename}.html" \
-        -o -f "${filename}.json" -o -f "${filename}.txt" -o -f "${filename}.xml" \
-       ]; then
-      echo "The file "${filename}" is in the directory."
-      echo "Downlading and redirecting content to "${filename}"..."
-      sleep 1
+    echo -e "Pass the web content to an existing file.\n"
+    read -p "Enter the filename: " filename
+    read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
 
-      # pass the url and filename to the function
-      scrape_html_text "${url}" "${filename}"
+    if [ -f "${filename}${ext}" -a -f "${filename}" ]; then
+      echo -e "There is more than one file with the same name.\n"
+      read -p "Send output to "${filename}${ext}" or ${filename}?: " ans1
+
+      if [ "${ans1}" ==  "${filename}${ext}" ]; then
+        read -p "Confirm redirect content to "${filename}${ext}" (y/n): " ans2
+        if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
+          "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
+          echo -e "dowloading content...\n"
+          sleep 1
+
+          # pass the url and filename to the function
+          scrape_html_text "${url}" "${filename}${ext}"
+        else
+          echo -e "\nexiting the program...."
+          exit
+        fi
+
+      elif [ "${ans1}" ==  "${filename}" ]; then
+        read -p "Confirm redirect content to "${filename}" (y/n): " ans2
+        if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
+          "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
+          echo -e "dowloading content...\n"
+          sleep 1
+
+          # pass the url and filename to the function
+          scrape_html_text "${url}" "${filename}"
+        else
+          echo -e "\nexiting the program...."
+          exit
+        fi
+      fi
+
+    elif [ -f "${filename}" | wc -l -eq 1 ]; then
+      read -p "Confirm redirect content to "${filename}" (y/n): " ans3
+      if [ "${ans3}" == "Y" -o "${ans3}" == "y" -o \
+        "${ans3}" == "Yes" -o "${ans3}" == "yes"  ]; then
+        echo -e "dowloading content...\n"
+        sleep 1
+
+        # pass the url and filename to the function
+        scrape_html_text "${url}" "${filename}"
+      else
+        echo -e "\nexiting the program...."
+        exit
+      fi
+
     else
-      echo "The file ${filename} is not in the directory."
+      echo -e "\nThe file ${filename} is not in the directory."
+      echo "Make sure to include the file extension."
     fi
     exit
     ;;
 
   2)
     echo -e "You chose to create a new file."
-    read -p "Give the file an extension (csv,html,json,txt,xml): " ext
+    read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
     if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
          -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
 ### bug fix - text for double extensions in the output .ext.ext ###
