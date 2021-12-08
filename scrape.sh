@@ -8,7 +8,7 @@ echo "This is simple webscraping utility."
 echo "The filepath for this script: $0"
 read -p "Enter the url: " url
 
-# create a function to scrape a webpage
+# a function to scrape a webpage
 function scrape_html_text()
 {
   echo "scraping url content: $1" && sleep 2
@@ -21,21 +21,30 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
-### START HERE NEXT ###
-### continue testing all of the if statementens; first section working ###
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or type [2] to create a new file: " choice
 case ${choice} in
   1)
-    echo -e "Pass the web content to an existing file.\n"
+    echo -e "You chose to pass the web content to an existing file.\n"
     read -p "Enter the filename: " filename
+
+    #  removes .ext if the user types filename.ext with an extension
+    filename=$(echo "${filename}" | awk -F "." '{print $1}')
+
+    ### START HERE NEXT ###
+    ### BUG TO FIX ###
+    # if the user does not enter an ext (just hits return) there will be...
+    # two files that are exactly the same when prompted to direct the output
     read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
 
+
+    # check if there are two files with the same name but different extensions
     if [ -f "${filename}${ext}" -a -f "${filename}" ]; then
       echo -e "There is more than one file with the same name.\n"
       read -p "Send output to "${filename}${ext}" or ${filename}?: " ans1
 
+      # user chooses filename.ext
       if [ "${ans1}" ==  "${filename}${ext}" ]; then
         read -p "Confirm redirect content to "${filename}${ext}" (y/n): " ans2
         if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
@@ -50,6 +59,7 @@ case ${choice} in
           exit
         fi
 
+      # user chooses filename (no extension)
       elif [ "${ans1}" ==  "${filename}" ]; then
         read -p "Confirm redirect content to "${filename}" (y/n): " ans2
         if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
@@ -65,23 +75,31 @@ case ${choice} in
         fi
       fi
 
-    elif [ -f "${filename}" | wc -l -eq 1 ]; then
-      read -p "Confirm redirect content to "${filename}" (y/n): " ans3
-      if [ "${ans3}" == "Y" -o "${ans3}" == "y" -o \
-        "${ans3}" == "Yes" -o "${ans3}" == "yes"  ]; then
-        echo -e "dowloading content...\n"
-        sleep 1
+    # check if there is only one existing file that matches the user input
+    # prompt user to ensure they want to overwrite existing content
+    elif [ -f "${filename}" ]; then
+      count_lines_in_file=$(wc -l ${filename} | awk '{print $1}')
+      if [ ${count_lines_in_file} -gt 0 ]; then
+        echo "The file has existing content."
+        read -p "Overwrite existing content?: (y/n): " ans3
+        if [ "${ans3}" == "Y" -o "${ans3}" == "y" -o \
+          "${ans3}" == "Yes" -o "${ans3}" == "yes"  ]; then
+          echo -e "dowloading content...\n"
+          sleep 1
 
-        # pass the url and filename to the function
-        scrape_html_text "${url}" "${filename}"
+          # pass the url and filename to the function
+          scrape_html_text "${url}" "${filename}"
+        fi
+
       else
-        echo -e "\nexiting the program...."
+        echo -e "\n${filename}${ext} is not in the directory."
+        echo -e "...exiting the program"
         exit
       fi
 
+    # exit program if user input does not match an existing file in the directory
     else
       echo -e "\nThe file ${filename} is not in the directory."
-      echo "Make sure to include the file extension."
     fi
     exit
     ;;
