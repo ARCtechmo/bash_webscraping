@@ -28,15 +28,45 @@ case ${choice} in
   1)
     echo -e "You chose to pass the web content to an existing file.\n"
     read -p "Enter the filename: " filename
+    echo -e "----------test prinnt filename: ${filename}-------------------\n"
 
     #  removes .ext if the user types filename.ext with an extension
     filename=$(echo "${filename}" | awk -F "." '{print $1}')
 
-    ### START HERE NEXT ###
-    ### BUG TO FIX ###
+    ### BUGS TO FIX ###
+
     # if the user does not enter an ext (just hits return) there will be...
-    # two files that are exactly the same when prompted to direct the output
+    ### use regex, BASH_REMATCH[1], if statements with command substitution ###
     read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
+    echo -e "------------------test print extension: ${ext}-------------------\n"
+
+    ### START HERE NEXT ###
+    #### TEST REGEX  ####
+    # need to modify dot_ext regexp variable
+    # it is still giving a correct match for muliple dots ..ext; should be a no match
+    # try ? + * to limit the \.
+    dot_ext="\.[a-z0-9]+"
+    echo "----------test BASH_REMATCH[1]:------------------------"
+    index_1=${BASH_REMATCH[1]}
+    echo "BASH_REMATCH[0]: ${index_1}"
+
+    no_dot_ext="[a-z0-9]+"
+    echo "----------test BASH_REMATCH[0]:------------------------"
+    index_0=${BASH_REMATCH[0]}
+    echo "BASH_REMATCH[1]: ${index_0}"
+
+    if [[ ${ext} =~ ${dot_ext} ]] || [[ ${ext} =~ ${no_dot_ext} ]]; then
+      echo -e "------------------test regexp match--------------------"
+      ext=$(echo "${ext}" | cut -f 2 -d ".")
+      echo -e "------------------test print extension: ${ext}-------------------\n"
+
+    # user must enter .ext or ext; all other entries will exit the program
+    else
+      echo -e "\n-------------test regexp nomatch------------------"
+      echo -e "incorrect extension type...exiting program"
+      exit
+    fi
+
 
 
     # check if there are two files with the same name but different extensions
