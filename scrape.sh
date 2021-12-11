@@ -21,69 +21,66 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
+### START HERE NEXT ###
+# made changes to adjust if the user entered filename.ext or just filename
+# test to ensure the code works with no bugs
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
-read -p "Type [1] for an existing file or type [2] to create a new file: " choice
+read -p "Type [1] for an existing file or [2] to create a new file: " choice
 case ${choice} in
   1)
     echo -e "You chose to pass the web content to an existing file.\n"
     read -p "Enter the filename: " filename
-    echo -e "----------test prinnt filename: ${filename}-------------------\n"
+    echo -e "----------test print filename: ${filename}-------------------\n"
+    if [[ "${filename}" =~ ([a-zA-Z0-9\_\-]+)(\.)([a-z0-9]+) ]]; then
+      echo -e "------------test regexp filename with ext match-------------"
+      #  remove .ext if the user types filename.ext with an extension
+      filename=$(echo "${filename}" | awk -F "." '{print $1}')
 
-    #  removes .ext if the user types filename.ext with an extension
-    filename=$(echo "${filename}" | awk -F "." '{print $1}')
-
-    ### BUGS TO FIX ###
-
-    # if the user does not enter an ext (just hits return) there will be...
-    ### use regex, BASH_REMATCH[1], if statements with command substitution ###
-    read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
-    echo -e "------------------test print extension: ${ext}-------------------\n"
-
-    ### START HERE NEXT ###
-    #### TEST REGEX  ####
-    # need to modify dot_ext regexp variable
-    # it is still giving a correct match for muliple dots ..ext; should be a no match
-    # try ? + * to limit the \.
-    dot_ext="\.[a-z0-9]+"
-    echo "----------test BASH_REMATCH[1]:------------------------"
-    index_1=${BASH_REMATCH[1]}
-    echo "BASH_REMATCH[0]: ${index_1}"
-
-    no_dot_ext="[a-z0-9]+"
-    echo "----------test BASH_REMATCH[0]:------------------------"
-    index_0=${BASH_REMATCH[0]}
-    echo "BASH_REMATCH[1]: ${index_0}"
-
-    if [[ ${ext} =~ ${dot_ext} ]] || [[ ${ext} =~ ${no_dot_ext} ]]; then
-      echo -e "------------------test regexp match--------------------"
-      ext=$(echo "${ext}" | cut -f 2 -d ".")
+    else
+      echo -e "------------regexp filename without ext non-match-------------"
+      # if the user does not enter an ext (just hits return) there will be...
+      read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
       echo -e "------------------test print extension: ${ext}-------------------\n"
 
-    # user must enter .ext or ext; all other entries will exit the program
-    else
-      echo -e "\n-------------test regexp nomatch------------------"
-      echo -e "incorrect extension type...exiting program"
-      exit
+      # user must enter .ext or ext; all other entries will exit the program
+      if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
+        ext=${BASH_REMATCH[2]}
+        echo -e "------------------test regexp BASH_REMATCH[2]------------------"
+        echo -e "-----------------extension test: ${ext}-----------------------"
+
+      elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
+        ext=${BASH_REMATCH[1]}
+        echo -e "------------------test regexp BASH_REMATCH[1]------------------"
+        echo -e "-----------------extension test: ${ext}-----------------------"
+
+      else
+        echo -e "\n-------------test regexp nomatch------------------"
+        echo -e "incorrect extension type...exiting program"
+        exit
+
+      fi
+
     fi
 
-
+    ### TEST FOR BUGS ###
+    # may need to adjust the structure of the code below since I made changes to the user input
 
     # check if there are two files with the same name but different extensions
-    if [ -f "${filename}${ext}" -a -f "${filename}" ]; then
+    if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
       echo -e "There is more than one file with the same name.\n"
-      read -p "Send output to "${filename}${ext}" or ${filename}?: " ans1
+      read -p "Send output to "${filename}.${ext}" or ${filename}?: " ans1
 
       # user chooses filename.ext
-      if [ "${ans1}" ==  "${filename}${ext}" ]; then
-        read -p "Confirm redirect content to "${filename}${ext}" (y/n): " ans2
+      if [ "${ans1}" ==  "${filename}.${ext}" ]; then
+        read -p "Confirm redirect content to "${filename}.${ext}" (y/n): " ans2
         if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
           "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
           echo -e "dowloading content...\n"
           sleep 1
 
           # pass the url and filename to the function
-          scrape_html_text "${url}" "${filename}${ext}"
+          scrape_html_text "${url}" "${filename}.${ext}"
         else
           echo -e "\nexiting the program...."
           exit
@@ -122,14 +119,14 @@ case ${choice} in
         fi
 
       else
-        echo -e "\n${filename}${ext} is not in the directory."
+        echo -e "\n"${filename}.${ext}" is not in the directory."
         echo -e "...exiting the program"
         exit
       fi
 
     # exit program if user input does not match an existing file in the directory
     else
-      echo -e "\nThe file ${filename} is not in the directory."
+      echo -e "\nThe file "${filename}" is not in the directory."
     fi
     exit
     ;;
@@ -139,7 +136,8 @@ case ${choice} in
     read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
     if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
          -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
-### bug fix - text for double extensions in the output .ext.ext ###
+
+### test with new ext fixed bug fix - text for double extensions in the output .ext.ext ###
       formatted_ext=".${ext}"
       echo "The file extension is ${formatted_ext}"
       read -p "Enter the name of the file to direct the web content: " filename
