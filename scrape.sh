@@ -22,8 +22,11 @@ function scrape_html_text()
 }
 
 ### START HERE NEXT ###
-# made changes to adjust if the user entered filename.ext or just filename
-# test to ensure the code works with no bugs
+### TEST FOR MORE BUGS ###
+### specifically test for in correct input such as...
+# $#filename, filename..ext #filename...ext, [nofilname], filename[noext]
+# file$%name..$.ext, etc...
+
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or [2] to create a new file: " choice
@@ -32,14 +35,17 @@ case ${choice} in
     echo -e "You chose to pass the web content to an existing file.\n"
     read -p "Enter the filename: " filename
     echo -e "----------test print filename: ${filename}-------------------\n"
-    if [[ "${filename}" =~ ([a-zA-Z0-9\_\-]+)(\.)([a-z0-9]+) ]]; then
-      echo -e "------------test regexp filename with ext match-------------"
+
+    # if the user enters a filename with an extension
+    if [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
       #  remove .ext if the user types filename.ext with an extension
       filename=$(echo "${filename}" | awk -F "." '{print $1}')
+      echo -e "------------test regexp filename with ext match: ${filename}-------------"
+      ext=${BASH_REMATCH[3]}
+      echo -e "------------test regexp file ext: ${ext}-----------------------"
 
-    else
-      echo -e "------------regexp filename without ext non-match-------------"
-      # if the user does not enter an ext (just hits return) there will be...
+    # if the user enters a filename without an extension
+    elif [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
       read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
       echo -e "------------------test print extension: ${ext}-------------------\n"
 
@@ -47,24 +53,31 @@ case ${choice} in
       if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
         ext=${BASH_REMATCH[2]}
         echo -e "------------------test regexp BASH_REMATCH[2]------------------"
-        echo -e "-----------------extension test: ${ext}-----------------------"
+        echo -e "-----------------extension test: ${ext}-----------------------\n"
 
       elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
         ext=${BASH_REMATCH[1]}
         echo -e "------------------test regexp BASH_REMATCH[1]------------------"
-        echo -e "-----------------extension test: ${ext}-----------------------"
+        echo -e "-----------------extension test: ${ext}-----------------------\n"
 
       else
-        echo -e "\n-------------test regexp nomatch------------------"
+        echo -e "\n------------test regexp nomatch------------------"
         echo -e "incorrect extension type...exiting program"
         exit
 
       fi
 
+    else
+      # exit if user does not enter a filename or ext
+      echo -e "------------regexp filename ext non-match-------------"
+      echo -e "incorrect filename and / or extension"
+      echo -e "exiting the program..."
+      exit
     fi
+    echo -e "\n--------------test for correct filename and extension------------"
+    echo -e "--------------filename: ${filename}------------------------------"
+    echo -e "--------------extension: ${ext}----------------------------------"
 
-    ### TEST FOR BUGS ###
-    # may need to adjust the structure of the code below since I made changes to the user input
 
     # check if there are two files with the same name but different extensions
     if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
