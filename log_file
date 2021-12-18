@@ -1,0 +1,105 @@
+commit 4e9197b3b8d817a81a8b71c2b2dbe3236c6c646a
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Tue Dec 14 13:33:25 2021 -0500
+
+    chaned the extention to the README file to MARKDOWN
+
+commit b9f0661235af38ce4a6dc3a5f72c2bb709a6626a
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Dec 12 11:40:40 2021 -0500
+
+    continued debugging for varioius user input for the filename
+    and file extension; made minor adjustments to the regular
+    expressions in the the "case 1" section; continue debugging
+
+commit dc63afeb7be3b8bbdc526ad7e89d31d09a488ebc
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sat Dec 11 13:39:48 2021 -0500
+
+    adjusted to code to account for user input for the filename
+    with and extension or without an extension
+
+commit b36a67d146cc60b4dd25a704603a67773294ff08
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Thu Dec 9 18:22:16 2021 -0500
+
+    continued work on user input for the file extension
+    used regex to try and account multiple types of input
+    and user error; the regex needs more work
+
+commit f9446e31e6db5a356700363a2e0119541db0fe66
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Dec 8 17:15:00 2021 -0500
+
+    fixed some bugs to account for user input for filenames with
+    an extension or without an extension
+
+commit 7ec99dcfea35977f0d2792fa34f1743bbd7c9d5b
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Fri Dec 3 11:54:08 2021 -0500
+
+    updated the code to deal with the multiple options for file
+    extensions and the filename to direct the web content.
+
+commit d5f14d2571d1197696a25b77b156d43cde64e7d6
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Thu Dec 2 19:14:45 2021 -0500
+
+    integrated the scrape_html_text function into the "case" section
+    with the options but I did discover a couple of bugs.  It is
+    creating two files so I need to modify the if statements to
+    not create fiels.  The html2text command in the function creates
+    a file.
+
+commit c8e2deb5239d405f2d52d81467eb5d9ff190c181
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Dec 1 19:59:34 2021 -0500
+
+    modified code in the "case" section that dealt with file extensions
+
+commit 8621018d04b0760c57907ef2ddb2cfbd75139305
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Tue Nov 30 19:05:23 2021 -0500
+
+    I added additional sections of code to prompt for user input that
+    creates files that will contain the scraped webdata.
+
+commit 34013f5117719d33c389abf56f2f3a3337ebbc99
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Thu Nov 25 11:58:22 2021 -0500
+
+    Completed the second function that converts the encoding (e.g. UTF8) to
+    the local encoding (e.g. ASCII).  The next step is to prompt for user
+    input and integrate the functions.
+
+commit 5546e2019b9743a2a4447b3c113a956df5e50995
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Nov 24 16:15:58 2021 -0500
+
+    This is the first incomplete version of the scrape.sh webscraping utility that I will commit.
+    The code is incomplete but I will build it piece by piece.
+
+commit 5a7680bd69e9a0049a1bd8ed249d2385823aa2ab
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Nov 24 14:25:33 2021 -0500
+
+    added an additionl method to split a string using awk
+    this file now shows three options to split a string with bash
+
+commit 980dc47151324c252af24a2644d0aed4e989f591
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Nov 21 16:10:27 2021 -0500
+
+    Adding the code for different methods to split the string.
+
+commit d412ca8cb695d6167f046d8d218045a91d951b55
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Nov 21 16:00:50 2021 -0500
+
+    Create utf8.sh
+
+commit 8dcd1e5fcf0f342929e1d78d0050abf63a912123
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Nov 21 15:27:28 2021 -0500
+
+    This is the first commits to the webscraping repository.
