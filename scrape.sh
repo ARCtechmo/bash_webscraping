@@ -21,12 +21,6 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
-### START HERE NEXT ###
-### TEST FOR MORE BUGS ###
-### specifically test for in correct input such as...
-# $#filename, filename..ext #filename...ext, [nofilname], filename[noext]
-# file$%name..$.ext, etc...
-
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or [2] to create a new file: " choice
@@ -44,28 +38,67 @@ case ${choice} in
       ext=${BASH_REMATCH[3]}
       echo -e "------------test regexp file ext: ${ext}-----------------------"
 
+    ### START HERE NEXT ###
+    # I restructred the code so modifications are necessary #
+    # Basically, this is what I want:
+    #   when the user enters a filename without an extension...
+    #   then ask the user is there an extension, if yes then add the extension
+    #   if the filename.ext exists and is empty then download; if not prompt
+    #   to overwrite the file; if the filename has not extension do the same thing
     # if the user enters a filename without an extension
     elif [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
-      read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
-      echo -e "------------------test print extension: ${ext}-------------------\n"
+      echo -e "Does the file have an extension?: (Y/N)" ans1
+      if [ "${ans1}" == "Y" -o "${ans1}" == "y" -o \
+        "${ans1}" == "Yes" -o "${ans1}" == "yes"  ]; then
+          read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
+          echo -e "------------------test print extension: ${ext}-------------------\n"
 
-      # user must enter .ext or ext; all other entries will exit the program
-      if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
-        ext=${BASH_REMATCH[2]}
-        echo -e "------------------test regexp BASH_REMATCH[2]------------------"
-        echo -e "-----------------extension test: ${ext}-----------------------\n"
+          # user must enter .ext or ext; all other entries will exit the program
+          if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
+            ext=${BASH_REMATCH[2]}
+            echo -e "------------------test regexp BASH_REMATCH[2]------------------"
+            echo -e "-----------------extension test: ${ext}-----------------------\n"
+          elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
+            ext=${BASH_REMATCH[1]}
+            echo -e "------------------test regexp BASH_REMATCH[1]------------------"
+            echo -e "-----------------extension test: ${ext}-----------------------\n"
+          else
+            echo -e "\n------------test regexp nomatch------------------"
+            echo -e "incorrect extension type...exiting program"
+            exit
+          fi
 
-      elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
-        ext=${BASH_REMATCH[1]}
-        echo -e "------------------test regexp BASH_REMATCH[1]------------------"
-        echo -e "-----------------extension test: ${ext}-----------------------\n"
 
-      else
-        echo -e "\n------------test regexp nomatch------------------"
-        echo -e "incorrect extension type...exiting program"
-        exit
 
-      fi
+
+          # check if the file is NOT empty
+          if [ -s "${filename}" ]; then
+            echo "The file has existing content."
+            read -p "Overwrite existing content?: (y/n): " ans2
+            if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
+              "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
+              echo -e "dowloading content...\n"
+              sleep 1
+
+              # pass the url and filename to the function
+              scrape_html_text "${url}" "${filename}"
+
+            else
+              echo -e "cancelling download....."
+              echo -e "exiting program..."
+              exit
+            fi
+
+          # check if the file is empty
+          elif [ ! -s  "${filename}" ]; then
+            echo -e "The file is empty."
+            echo -e "dowloading content...\n"
+            sleep 1
+
+            # pass the url and filename to the function
+            scrape_html_text "${url}" "${filename}"
+
+
 
     else
       # exit if user does not enter a filename or ext
@@ -77,7 +110,6 @@ case ${choice} in
     echo -e "\n--------------test for correct filename and extension------------"
     echo -e "--------------filename: ${filename}------------------------------"
     echo -e "--------------extension: ${ext}----------------------------------"
-
 
     # check if there are two files with the same name but different extensions
     if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
@@ -113,8 +145,15 @@ case ${choice} in
           echo -e "\nexiting the program...."
           exit
         fi
+
+      # user does not make a selection
+      else
+        echo -e "User did not select a file"
+        echo -e "exiting the program...."
+
       fi
 
+    ### Moidify  section ##
     # check if there is only one existing file that matches the user input
     # prompt user to ensure they want to overwrite existing content
     elif [ -f "${filename}" ]; then
