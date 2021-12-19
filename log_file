@@ -1,3 +1,24 @@
+commit a09139913a3561ec5bbfd7549771d4d307fef9d3
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sat Dec 18 15:24:12 2021 -0500
+
+    restructred the code in the "case 1" section of the code
+    to account for user input with a filename and no extension
+    also did some debugging of the same section; more work is
+    required on this same section
+
+commit 787b9483d0af5c53ea3059965c5827f9437170a5
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sat Dec 18 13:15:28 2021 -0500
+
+    deleted an old version of the README file without the MARKDOWN ext
+
+commit 714acdb7fad6023a9b8fd1d5b81de2ddd9dbdcae
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sat Dec 18 12:42:11 2021 -0500
+
+    added a log file based on git log
+
 commit 4e9197b3b8d817a81a8b71c2b2dbe3236c6c646a
 Author: Rashawn <arctitan78@gmail.com>
 Date:   Tue Dec 14 13:33:25 2021 -0500

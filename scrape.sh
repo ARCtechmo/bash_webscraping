@@ -30,24 +30,12 @@ case ${choice} in
     read -p "Enter the filename: " filename
     echo -e "----------test print filename: ${filename}-------------------\n"
 
-    # if the user enters a filename with an extension
-    if [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
-      #  remove .ext if the user types filename.ext with an extension
-      filename=$(echo "${filename}" | awk -F "." '{print $1}')
-      echo -e "------------test regexp filename with ext match: ${filename}-------------"
-      ext=${BASH_REMATCH[3]}
-      echo -e "------------test regexp file ext: ${ext}-----------------------"
-
-    ### START HERE NEXT ###
-    # I restructred the code so modifications are necessary #
-    # Basically, this is what I want:
-    #   when the user enters a filename without an extension...
-    #   then ask the user is there an extension, if yes then add the extension
-    #   if the filename.ext exists and is empty then download; if not prompt
-    #   to overwrite the file; if the filename has not extension do the same thing
+    # the purpose of this section of if-elif statements is to get the filename and ext
     # if the user enters a filename without an extension
-    elif [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
+    if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
       echo -e "Does the file have an extension?: (Y/N)" ans1
+
+      # ask user for an extension and answer is "yes"
       if [ "${ans1}" == "Y" -o "${ans1}" == "y" -o \
         "${ans1}" == "Yes" -o "${ans1}" == "yes"  ]; then
           read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
@@ -68,112 +56,173 @@ case ${choice} in
             exit
           fi
 
+      # ask user for an extension and answer is "no"
+      elif [ "${ans1}" == "N" -o "${ans1}" == "n" -o \
+            "${ans1}" == "No" -o "${ans1}" == "no"  ]; then
+              echo -e "The filename is: ${filename}."
 
+      # user enters incorrect input so the program exits
+      else
+        echo -e "You did not enter 'yes' or 'no' or incorrect input."
+        echo -e "exiting the program..."
+        exit
 
+      fi
 
-          # check if the file is NOT empty
-          if [ -s "${filename}" ]; then
-            echo "The file has existing content."
-            read -p "Overwrite existing content?: (y/n): " ans2
-            if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
-              "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
+    # if the user enters a filename with an extension
+    elif [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
+      #  remove .ext if the user types filename.ext with an extension
+      filename=$(echo "${filename}" | awk -F "." '{print $1}')
+      echo -e "------------test regexp filename with ext match: ${filename}-------------"
+      ext=${BASH_REMATCH[3]}
+      echo -e "------------test regexp file ext: ${ext}-----------------------"
+
+    # exit if user does not enter a filename or extension
+    else
+      echo -e "------------regexp filename ext non-match-------------"
+      echo -e "incorrect filename and / or extension"
+      echo -e "exiting the program..."
+      exit
+
+    fi
+
+    # at this point the user has input a filename with or without an extension
+    # The user has typed filename.ext or typed filename
+    # test for correct filename and extension
+    echo -e "\n--------------test for correct filename and extension------------"
+    echo -e "--------------filename: ${filename}------------------------------"
+    echo -e "--------------extension: ${ext}----------------------------------"
+
+    # a new set of if-elif statements check for files with the same name but different ext
+    # these statements prompts the user to download the content to one of the files
+    # this section also checks to ensure the files are empty before downloading
+
+    # check if there are two files with the same name but different extensions
+    if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
+      echo -e "There is more than one file with the same name.\n"
+      read -p "Send output to "${filename}.${ext}" or ${filename}?: " ans2
+
+      # user chooses to direct content to filename.ext
+      if [ "${ans2}" ==  "${filename}.${ext}" ]; then
+        read -p "Confirm redirect content to "${filename}.${ext}" (Y/N): " ans3
+
+        if [ "${ans3}" == "Y" -o "${ans3}" == "y" -o \
+          "${ans3}" == "Yes" -o "${ans3}" == "yes"  ]; then
+
+            # check if the file is NOT empty
+            if [ -s "${filename}.${ext}" ]; then
+              echo "The file has existing content."
+              read -p "Overwrite existing content?: (Y/N): " ans4
+              if [ "${ans4}" == "Y" -o "${ans4}" == "y" -o \
+                "${ans4}" == "Yes" -o "${ans4}" == "yes"  ]; then
+                echo -e "dowloading content...\n"
+                sleep 1
+
+                # pass the url and filename to the function
+                scrape_html_text "${url}" "${filename}.${ext}"
+
+              else
+                echo -e "cancelling download....."
+                echo -e "exiting program..."
+                exit
+              fi
+
+            # download the content if the file is empty
+            elif [ ! -s  "${filename}.${ext}" ]; then
+              echo -e "The file is empty."
               echo -e "dowloading content...\n"
               sleep 1
 
               # pass the url and filename to the function
               scrape_html_text "${url}" "${filename}"
 
-            else
-              echo -e "cancelling download....."
-              echo -e "exiting program..."
-              exit
             fi
 
-          # check if the file is empty
-          elif [ ! -s  "${filename}" ]; then
-            echo -e "The file is empty."
-            echo -e "dowloading content...\n"
-            sleep 1
-
-            # pass the url and filename to the function
-            scrape_html_text "${url}" "${filename}"
-
-
-
-    else
-      # exit if user does not enter a filename or ext
-      echo -e "------------regexp filename ext non-match-------------"
-      echo -e "incorrect filename and / or extension"
-      echo -e "exiting the program..."
-      exit
-    fi
-    echo -e "\n--------------test for correct filename and extension------------"
-    echo -e "--------------filename: ${filename}------------------------------"
-    echo -e "--------------extension: ${ext}----------------------------------"
-
-    # check if there are two files with the same name but different extensions
-    if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
-      echo -e "There is more than one file with the same name.\n"
-      read -p "Send output to "${filename}.${ext}" or ${filename}?: " ans1
-
-      # user chooses filename.ext
-      if [ "${ans1}" ==  "${filename}.${ext}" ]; then
-        read -p "Confirm redirect content to "${filename}.${ext}" (y/n): " ans2
-        if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
-          "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
-          echo -e "dowloading content...\n"
-          sleep 1
-
-          # pass the url and filename to the function
-          scrape_html_text "${url}" "${filename}.${ext}"
         else
-          echo -e "\nexiting the program...."
+          echo -e "user seleccted 'no' or invalid input"
+          echo -e "exiting program..."
           exit
         fi
 
-      # user chooses filename (no extension)
-      elif [ "${ans1}" ==  "${filename}" ]; then
-        read -p "Confirm redirect content to "${filename}" (y/n): " ans2
-        if [ "${ans2}" == "Y" -o "${ans2}" == "y" -o \
-          "${ans2}" == "Yes" -o "${ans2}" == "yes"  ]; then
-          echo -e "dowloading content...\n"
-          sleep 1
+      # user chooses to direct content to filename (no extension)
+      elif [ "${ans2}" ==  "${filename}" ]; then
+        read -p "Confirm redirect content to "${filename}" (Y/N): " ans5
 
-          # pass the url and filename to the function
-          scrape_html_text "${url}" "${filename}"
+        if [ "${ans5}" == "Y" -o "${ans5}" == "y" -o \
+          "${ans5}" == "Yes" -o "${ans5}" == "yes"  ]; then
+
+            # check if the file is NOT empty
+            if [ -s "${filename}" ]; then
+              echo "The file has existing content."
+              read -p "Overwrite existing content?: (Y/N): " ans6
+              if [ "${ans6}" == "Y" -o "${ans6}" == "y" -o \
+                "${ans6}" == "Yes" -o "${ans6}" == "yes"  ]; then
+                  echo -e "dowloading content...\n"
+                  sleep 1
+                  # pass the url and filename to the function
+                  scrape_html_text "${url}" "${filename}"
+              else
+                echo -e "cancelling download....."
+                echo -e "exiting program..."
+                exit
+              fi
+
+            # download the content if the file is empty
+            elif [ ! -s  "${filename}" ]; then
+              echo -e "The file is empty."
+              echo -e "dowloading content...\n"
+              sleep 1
+
+              # pass the url and filename to the function
+              scrape_html_text "${url}" "${filename}"
+
+            fi
+
         else
-          echo -e "\nexiting the program...."
+          echo -e "user seleccted 'no' or invalid input"
+          echo -e "exiting program..."
           exit
         fi
 
-      # user does not make a selection
+      # exit if user does not make a selection to direct the content
       else
         echo -e "User did not select a file"
         echo -e "exiting the program...."
+        exit
 
       fi
 
-    ### Moidify  section ##
     # check if there is only one existing file that matches the user input
     # prompt user to ensure they want to overwrite existing content
     elif [ -f "${filename}" ]; then
-      count_lines_in_file=$(wc -l ${filename} | awk '{print $1}')
-      if [ ${count_lines_in_file} -gt 0 ]; then
+
+      # check if the file is NOT empty
+      if [ -s "${filename}" ]; then
         echo "The file has existing content."
-        read -p "Overwrite existing content?: (y/n): " ans3
-        if [ "${ans3}" == "Y" -o "${ans3}" == "y" -o \
-          "${ans3}" == "Yes" -o "${ans3}" == "yes"  ]; then
+        read -p "Overwrite existing content?: (Y/N): " ans7
+        if [ "${ans7}" == "Y" -o "${ans7}" == "y" -o \
+          "${ans7}" == "Yes" -o "${ans7}" == "yes"  ]; then
           echo -e "dowloading content...\n"
           sleep 1
 
           # pass the url and filename to the function
           scrape_html_text "${url}" "${filename}"
+
+        else
+          echo -e "cancelling download....."
+          echo -e "exiting program..."
+          exit
         fi
 
-      else
-        echo -e "\n"${filename}.${ext}" is not in the directory."
-        echo -e "...exiting the program"
-        exit
+      # download the content if the file is empty
+      elif [ ! -s  "${filename}" ]; then
+        echo -e "The file is empty."
+        echo -e "dowloading content...\n"
+        sleep 1
+
+        # pass the url and filename to the function
+        scrape_html_text "${url}" "${filename}"
+
       fi
 
     # exit program if user input does not match an existing file in the directory
