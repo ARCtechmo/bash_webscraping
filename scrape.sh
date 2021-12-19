@@ -21,6 +21,10 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
+
+#### START HERE NEXT ####
+# test and debug section case 1)
+# I believe this section works but I need to test it thoroughly
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or [2] to create a new file: " choice
