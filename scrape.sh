@@ -21,10 +21,6 @@ function scrape_html_text()
   echo -e "\ndisplaying file type..." && file ${html_file} && file -i ${html_file}
 }
 
-
-#### START HERE NEXT ####
-# test and debug section case 1)
-# I believe this section works but I need to test it thoroughly
 # options to direct the web content to an existing file or create the file
 echo -e "\nNext, pass the web content to an existing file or create a new file."
 read -p "Type [1] for an existing file or [2] to create a new file: " choice
@@ -37,7 +33,7 @@ case ${choice} in
     # the purpose of this section of if-elif statements is to get the filename and ext
     # if the user enters a filename without an extension
     if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
-      echo -e "Does the file have an extension?: (Y/N)" ans1
+      read -p "Does the file have an extension?: (Y/N) " ans1
 
       # ask user for an extension and answer is "yes"
       if [ "${ans1}" == "Y" -o "${ans1}" == "y" -o \
@@ -48,11 +44,11 @@ case ${choice} in
           # user must enter .ext or ext; all other entries will exit the program
           if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[2]}
-            echo -e "------------------test regexp BASH_REMATCH[2]------------------"
+            echo -e "------------------test regexp ${BASH_REMATCH[2]}------------------"
             echo -e "-----------------extension test: ${ext}-----------------------\n"
           elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[1]}
-            echo -e "------------------test regexp BASH_REMATCH[1]------------------"
+            echo -e "------------------test regexp ${BASH_REMATCH[1]}------------------"
             echo -e "-----------------extension test: ${ext}-----------------------\n"
           else
             echo -e "\n------------test regexp nomatch------------------"
@@ -96,10 +92,6 @@ case ${choice} in
     echo -e "\n--------------test for correct filename and extension------------"
     echo -e "--------------filename: ${filename}------------------------------"
     echo -e "--------------extension: ${ext}----------------------------------"
-
-    # a new set of if-elif statements check for files with the same name but different ext
-    # these statements prompts the user to download the content to one of the files
-    # this section also checks to ensure the files are empty before downloading
 
     # check if there are two files with the same name but different extensions
     if [ -f "${filename}.${ext}" -a -f "${filename}" ]; then
