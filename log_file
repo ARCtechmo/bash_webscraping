@@ -1,3 +1,24 @@
+commit 48753b19d95b3ef412307eb7e12382a5c3bba75e
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Dec 22 15:51:04 2021 -0500
+
+    tested the case 1) section of the code and everything seems to work
+    move on to case 2) section of the code
+
+commit 32e9ffc9f3b7354b6fdeed0c6f5f4bb78ef653d7
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Dec 19 12:49:29 2021 -0500
+
+    added a notes to start at section case 1) next time to debug and test
+
+commit 9abd8462e490e17226f0d1d138068448bf3c4fdc
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Sun Dec 19 12:44:19 2021 -0500
+
+    made significant modifications to scrape.sh
+    continued to work on the first "case 1)" section
+    need to test and debug the "case 1) section
+
 commit a09139913a3561ec5bbfd7549771d4d307fef9d3
 Author: Rashawn <arctitan78@gmail.com>
 Date:   Sat Dec 18 15:24:12 2021 -0500
