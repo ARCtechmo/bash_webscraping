@@ -1,3 +1,18 @@
+commit 4eff9dad901cb31467d8324b2fb445d91446aa75
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Dec 22 16:33:20 2021 -0500
+
+    added a file to list known bugs in the program
+    I caught one bug that is not catching user input error on the ext
+    for instance, if a user enters ..html, the regex is supposed to
+    catch this but it is not working; this is a minor issue so fix later
+
+commit f1f7c03e8721f637fc2f222ed5cb693daf715512
+Author: Rashawn <arctitan78@gmail.com>
+Date:   Wed Dec 22 15:52:44 2021 -0500
+
+    updated the log file
+
 commit 48753b19d95b3ef412307eb7e12382a5c3bba75e
 Author: Rashawn <arctitan78@gmail.com>
 Date:   Wed Dec 22 15:51:04 2021 -0500
