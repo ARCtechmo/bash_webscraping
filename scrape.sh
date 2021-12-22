@@ -30,7 +30,7 @@ case ${choice} in
     read -p "Enter the filename: " filename
     echo -e "----------test print filename: ${filename}-------------------\n"
 
-    # the purpose of this section of if-elif statements is to get the filename and ext
+
     # if the user enters a filename without an extension
     if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
       read -p "Does the file have an extension?: (Y/N) " ans1
@@ -69,6 +69,7 @@ case ${choice} in
 
       fi
 
+    # the purpose of this section of if-elif statements is to get the filename and ext
     # if the user enters a filename with an extension
     elif [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
       #  remove .ext if the user types filename.ext with an extension
