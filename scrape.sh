@@ -229,6 +229,9 @@ case ${choice} in
     exit
     ;;
 
+
+### START HERE NEXT ###
+# TEST AND DEBUG #
   2)
     echo -e "You chose to create a new file."
     read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
