@@ -229,44 +229,90 @@ case ${choice} in
     exit
     ;;
 
-
 ### START HERE NEXT ###
-# TEST AND DEBUG #
+# section 2 works just TEST AND DEBUG #
   2)
     echo -e "You chose to create a new file."
-    read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
-    if [ "${ext}" == "csv" -o "${ext}" == "html" -o "${ext}" == "json"\
-         -o "${ext}" == "txt" -o "${ext}" == "xml" ]; then
+    read -p "Enter the filename: " filename
+    echo -e "----------test print filename: ${filename}-------------------\n"
 
-### test with new ext fixed bug fix - text for double extensions in the output .ext.ext ###
-      formatted_ext=".${ext}"
-      echo "The file extension is ${formatted_ext}"
-      read -p "Enter the name of the file to direct the web content: " filename
-      echo "The filename: ${filename}${formatted_ext}"
-      echo -e "creating the file in the current working directory..."
-      sleep 1 && touch "${filename}${formatted_ext}"
-      echo -e "\nDownlading and redirecting content to "${filename}"..."
+    # if the user enters a filename without an extension
+    if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
+      read -p "Does the file have an extension?: (Y/N) " ans8
+
+      # ask user for an extension and answer is "yes"
+      if [ "${ans8}" == "Y" -o "${ans8}" == "y" -o \
+        "${ans8}" == "Yes" -o "${ans8}" == "yes"  ]; then
+          read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
+          echo -e "------------------test print extension: ${ext}-------------------\n"
+
+          # user must enter .ext or ext; all other entries will exit the program
+          if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
+            ext=${BASH_REMATCH[2]}
+            echo -e "------------------test regexp ${BASH_REMATCH[2]}------------------"
+            echo -e "-----------------extension test: ${ext}-----------------------\n"
+            filename=${filename}.${ext}
+            echo -e "----------------test filename with extension:${filename}-------------------\n"
+            touch ${filename} && echo "creating file..."
+            sleep 1
+            echo -e "----------------test filename with extension:${filename}-------------------\n"
+            echo -e "dowloading content...\n"
+            sleep 1
+
+            # pass the url and filename to the function
+            scrape_html_text "${url}" "${filename}"
+
+          elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
+            ext=${BASH_REMATCH[1]}
+            echo -e "------------------test regexp ${BASH_REMATCH[1]}------------------"
+            echo -e "-----------------extension test: ${ext}-----------------------\n"
+            filename=${filename}.${ext}
+            echo -e "----------------test filename with extension:${filename}-------------------\n"
+            touch ${filename} && echo "creating file..."
+            sleep 1
+            echo -e "----------------test filename with extension:${filename}-------------------\n"
+            echo -e "dowloading content...\n"
+            sleep 1
+
+            # pass the url and filename to the function
+            scrape_html_text "${url}" "${filename}"
+
+          else
+            echo -e "\n------------test regexp nomatch------------------"
+            echo -e "incorrect extension type...exiting program"
+            exit
+
+          fi
+
+      # ask user for an extension and answer is "no"
+      elif [ "${ans8}" == "N" -o "${ans8}" == "n" -o \
+            "${ans8}" == "No" -o "${ans8}" == "no"  ]; then
+              touch ${filename} && echo "creating file..."
+              sleep 1
+              echo -e "----------------test filename with extension:${filename}-------------------\n"
+              echo -e "dowloading content...\n"
+              sleep 1
+
+              # pass the url and filename to the function
+              scrape_html_text "${url}" "${filename}"
+
+      # user enters incorrect input so the program exits
+      else
+        echo -e "You did not enter 'yes' or 'no' or incorrect input."
+        echo -e "exiting the program..."
+        exit
+
+      fi
+
+    elif [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
+      touch ${filename} && echo "creating file..."
+      sleep 1
+      echo -e "dowloading content...\n"
       sleep 1
 
-      # pass the url and filename to the function
-      scrape_html_text "${url}" "${filename}"
-
-### bug fix - text for double extensions in the output .ext.ext ###
-
-    elif [ "${ext}" == ".csv" -o "${ext}" == ".html" -o "${ext}" == ".json"\
-         -o "${ext}" == ".txt" -o "${ext}" == ".xml" ]; then
-
-      echo "The file extension is ${ext}"
-      read -p "Enter the name of the file to direct the web content: " filename
-      echo "The filename: ${filename}${ext}"
-      echo -e "creating the file in the current working directory..."
-      sleep 1 && touch ./"${filename}${ext}"
-      echo -e "\nDownloading and redirecting content to "${filename}
-      # pass the url and filename to the function
-      scrape_html_text "${url}" "${filename}"
-
     else
-        echo "Invalid format. Use lowercase only."
+        echo -e "Invalid file format."
+        echo -e "exiting the program...."
         exit
 
     fi
