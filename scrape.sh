@@ -229,15 +229,19 @@ case ${choice} in
     exit
     ;;
 
-### START HERE NEXT ###
-# section 2 works just TEST AND DEBUG #
   2)
     echo -e "You chose to create a new file."
     read -p "Enter the filename: " filename
     echo -e "----------test print filename: ${filename}-------------------\n"
 
     # if the user enters a filename without an extension
-    if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
+    if [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
+      touch ${filename} && echo "creating file..."
+      sleep 1
+      echo -e "dowloading content...\n"
+      sleep 1
+
+    elif [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
       read -p "Does the file have an extension?: (Y/N) " ans8
 
       # ask user for an extension and answer is "yes"
@@ -304,12 +308,6 @@ case ${choice} in
 
       fi
 
-    elif [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
-      touch ${filename} && echo "creating file..."
-      sleep 1
-      echo -e "dowloading content...\n"
-      sleep 1
-
     else
         echo -e "Invalid file format."
         echo -e "exiting the program...."
@@ -349,8 +347,11 @@ function decode_UTF8()
     echo -e "Converting encoding into local charset format...\n"
     sleep 1
 
+    ### BUG TO FIX ###
+    # error: 'iconv: conversion from `binary//TRANSLIT' is not supported'
     # convert the encoding (e.g. utf8) to the local encoding on your machine
-    convert=$(iconv -f ${from_encoding}//TRANSLIT -t US-ASCII//TRANSLIT ${html_file} -o ${html_text_file})
+    # I still get the binary error even when I create a .txt file
+    convert=$(iconv -f ${from_encoding}//TRANSLIT -t US-ASCII//TRANSLIT -o ${html_file} ${html_text_file})
     exit_status=$(echo $?)
     if [ ! ${exit_status} -eq 0 ]; then
       echo -e "\nuse 'iconv -l' command to ensure the 'data_type' variable is correct\n"
@@ -363,5 +364,5 @@ function decode_UTF8()
     fi
   fi
 }
-# input the url and <filename> into the command line: "scrape.sh" [url] [filename]
-# decode_UTF8 "${1}" "${2}"
+# input in the command line: "scrape.sh" [filename with dowloaded data] [filename with converted data]
+decode_UTF8 "${1}" "${2}"
