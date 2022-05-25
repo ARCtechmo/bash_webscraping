@@ -340,8 +340,8 @@ function decode_UTF8()
   if [ "${from_encoding}" == "ASCII" -o "${from_encoding}" == "ascii" ]; then
     echo "The scraped data type is "${from_encoding}". No further formatting is necessary"
 
-  elif [ "${from_encoding}" == "US-ASCII" -o ${from_encoding} == "us-ascii" ]; then
-    echo "The scraped data type is "${from_encoding}". No further formatting is necessary"
+  # elif [ "${from_encoding}" == "US-ASCII" -o "${from_encoding}" == "us-ascii" ]; then
+  #   echo "The scraped data type is "${from_encoding}". No further formatting is necessary"
 
   else
     echo -e "Converting encoding into local charset format...\n"
