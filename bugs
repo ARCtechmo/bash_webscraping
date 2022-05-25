@@ -1,9 +1,9 @@
 This file lists the known bugs in the scrape.sh scrpit file.
 
-minor essue: user input errors
-I wrote the code to account for user input errors for the filename and extenssion.
+minor issue: user input errors
+I wrote the code to account for user input errors for the filename and extensions.
 For instance, if the user inputs an incorrect extension the program will end or
-the program will try to compensate for the effor. If the user inputs an extra dot
-no an extension it is not accounting for this.  For example, if the user enters
+the program will try to compensate for the error. If the user inputs an extra dot
+not an extension it is not accounting for this.  For example, if the user enters
 ..csv or ...html, I used regexp and awk to remove the extra dots.  However, this is
 not working entirely.  
