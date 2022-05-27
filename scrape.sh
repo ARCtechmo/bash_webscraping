@@ -26,8 +26,6 @@ case ${choice} in
   1)
     echo -e "You chose to pass the web content to an existing file.\n"
     read -p "Enter the filename: " filename
-    echo -e "----------test print filename: ${filename}-------------------\n"
-
 
     # if the user enters a filename without an extension
     if [[  "${filename}" =~ (^[a-zA-Z0-9\_\-]+) ]]; then
@@ -37,19 +35,13 @@ case ${choice} in
       if [ "${ans1}" == "Y" -o "${ans1}" == "y" -o \
         "${ans1}" == "Yes" -o "${ans1}" == "yes"  ]; then
           read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
-          echo -e "------------------test print extension: ${ext}-------------------\n"
 
           # user must enter .ext or ext; all other entries will exit the program
           if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[2]}
-            echo -e "------------------test regexp ${BASH_REMATCH[2]}------------------"
-            echo -e "-----------------extension test: ${ext}-----------------------\n"
           elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[1]}
-            echo -e "------------------test regexp ${BASH_REMATCH[1]}------------------"
-            echo -e "-----------------extension test: ${ext}-----------------------\n"
           else
-            echo -e "\n------------test regexp nomatch------------------"
             echo -e "incorrect extension type...exiting program"
             exit
           fi
@@ -72,9 +64,7 @@ case ${choice} in
     elif [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
       #  remove .ext if the user types filename.ext with an extension
       filename=$(echo "${filename}" | awk -F "." '{print $1}')
-      echo -e "------------test regexp filename with ext match: ${filename}-------------"
       ext=${BASH_REMATCH[3]}
-      echo -e "------------test regexp file ext: ${ext}-----------------------"
 
     # exit if user does not enter a filename or extension
     else
@@ -88,7 +78,6 @@ case ${choice} in
     # at this point the user has input a filename with or without an extension
     # The user has typed filename.ext or typed filename
     # test for correct filename and extension
-    echo -e "\n--------------test for correct filename and extension------------"
     echo -e "--------------filename: ${filename}------------------------------"
     echo -e "--------------extension: ${ext}----------------------------------"
 
@@ -230,7 +219,6 @@ case ${choice} in
   2)
     echo -e "You chose to create a new file."
     read -p "Enter the filename: " filename
-    echo -e "----------test print filename: ${filename}-------------------\n"
 
     # if the user enters a filename without an extension
     if [[ "${filename}" =~ (^[a-zA-Z0-9\_\-]+)([\.]+)([a-z0-9]+) ]]; then
@@ -246,18 +234,13 @@ case ${choice} in
       if [ "${ans8}" == "Y" -o "${ans8}" == "y" -o \
         "${ans8}" == "Yes" -o "${ans8}" == "yes"  ]; then
           read -p "Enter file type (.csv,.html,.jpeg,.json,.txt,.xls,.xml,etc...): " ext
-          echo -e "------------------test print extension: ${ext}-------------------\n"
 
           # user must enter .ext or ext; all other entries will exit the program
           if [[ ${ext} =~ (^\.)([a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[2]}
-            echo -e "------------------test regexp ${BASH_REMATCH[2]}------------------"
-            echo -e "-----------------extension test: ${ext}-----------------------\n"
             filename=${filename}.${ext}
-            echo -e "----------------test filename with extension:${filename}-------------------\n"
             touch ${filename} && echo "creating file..."
             sleep 1
-            echo -e "----------------test filename with extension:${filename}-------------------\n"
             echo -e "dowloading content...\n"
             sleep 1
 
@@ -266,13 +249,9 @@ case ${choice} in
 
           elif [[ ${ext} =~ (^[a-z0-9]+) ]]; then
             ext=${BASH_REMATCH[1]}
-            echo -e "------------------test regexp ${BASH_REMATCH[1]}------------------"
-            echo -e "-----------------extension test: ${ext}-----------------------\n"
             filename=${filename}.${ext}
-            echo -e "----------------test filename with extension:${filename}-------------------\n"
             touch ${filename} && echo "creating file..."
             sleep 1
-            echo -e "----------------test filename with extension:${filename}-------------------\n"
             echo -e "dowloading content...\n"
             sleep 1
 
@@ -280,7 +259,6 @@ case ${choice} in
             scrape_html_text "${url}" "${filename}"
 
           else
-            echo -e "\n------------test regexp nomatch------------------"
             echo -e "incorrect extension type...exiting program"
             exit
 
@@ -291,7 +269,6 @@ case ${choice} in
             "${ans8}" == "No" -o "${ans8}" == "no"  ]; then
               touch ${filename} && echo "creating file..."
               sleep 1
-              echo -e "----------------test filename with extension:${filename}-------------------\n"
               echo -e "dowloading content...\n"
               sleep 1
 
