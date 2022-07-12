@@ -5,6 +5,11 @@
 # VERBOSE=false will not display the messages
 VERBOSE=true
 
+# declare named arrays
+declare -a download_links
+declare -a indexed_downloads
+declare -a indexed_indexes
+
 # warning messages
 function warn(){
   if ${VERBOSE}; then
@@ -21,17 +26,25 @@ function err(){
 }
 
 # create a variable for the Downloads Directory
-download_directory=~/Downloads
-echo "${download_directory}"
+function download_dir(){
+  download_directory=~/Downloads
+  if [ -e ${download_directory} ]; then
+    echo "The download directory path: ${download_directory}"
+  else
+    warn "Use mkdir command to create a download directory"
+  fi
+}
+download_dir
 
 # verify installation of xclip
+# the function takes exactly one parameter 'xclip'
 function install_xclip(){
   echo "-----------TEST: install_xclip(){} func---------------"
   echo "checking to see if xclip is installed..."
   sleep 2
   apt=$(sudo apt-cache policy $1 | awk '/none/ {print $2}')
   if [ "${apt}" == '(none)' ]; then
-    echo "$1 is not installed"
+    warn "$1 is not installed"
     read -p "Would you like to install $1? (Y/N) " ans
 
     case "${ans}" in
@@ -45,14 +58,13 @@ function install_xclip(){
 
       "N" | "n" | "No" | "NO" | "no")
       echo "You need to install $1 to continue."
-      echo "exiting..."
-      sleep 2
+      echo "exiting..." && sleep 2
       exit
       ;;
 
       *)
       echo "------------TEST: invalid input---------------"
-      echo "exiting..."
+      err "exiting..."
       sleep 2
       exit
       ;;
@@ -66,13 +78,14 @@ function install_xclip(){
 # install_xclip 'xclip'
 
 # verify installation of lynx
+# the function takes exactly one parameter 'lynx'
 function install_lynx(){
   echo "-----------TEST: install_lynx(){} func---------------"
   echo "checking to see if lynx is installed..."
   sleep 2
   apt=$(sudo apt-cache policy $1 | awk '/none/ {print $2}')
   if [ "${apt}" == '(none)' ]; then
-    echo "$1 is not installed."
+    warn "$1 is not installed."
     read -p "Would you like to install $1? (Y/N) " ans
 
     case "${ans}" in
@@ -86,15 +99,13 @@ function install_lynx(){
 
       "N" | "n" | "No" | "NO" | "no")
       echo "You need to install $1 to continue."
-      echo "exiting..."
-      sleep 2
+      echo "exiting..." && sleep 2
       exit
       ;;
 
       *)
       echo "------------TEST: invalid input---------------"
-      echo "exiting..."
-      sleep 2
+      err "exiting..." && sleep 2
       exit
       ;;
     esac
